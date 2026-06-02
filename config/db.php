@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "pcu_db";
 $username = "root";
-$password = "Sofia123";
+$password = "Carlos52842";
 
 try {
     $pdo = new PDO(
