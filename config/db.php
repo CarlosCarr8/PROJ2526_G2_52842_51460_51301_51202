@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "pcu_db";
 $username = "root";
-$password = "Carlos52842";
+$password = "Sofia123";
 
 try {
     $pdo = new PDO(
@@ -15,6 +15,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
+    echo $e;
     die("Erro ao ligar à base de dados.");
 }
 ?>
