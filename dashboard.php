@@ -47,6 +47,8 @@ include "includes/header.php";
                     </div>
                 </div>
 
+                
+
             <?php elseif ($role === "professor"): ?>
 
                 <div class="col-md-4">
@@ -62,6 +64,14 @@ include "includes/header.php";
                         <h5>Equipamentos</h5>
                         <p>Reservar equipamentos disponíveis.</p>
                         <a href="pages/equipment.php" class="btn btn-primary">Abrir</a>
+                    </div>
+                </div>
+
+                 <div class="col-md-4">
+                    <div class="card p-3 shadow-sm">
+                        <h5>Consultar Espaços</h5>
+                        <p>Consultar as salas e laboratórios disponíveis.</p>
+                        <a href="pages/spaces.php" class="btn btn-primary">Abrir</a>
                     </div>
                 </div>
 
