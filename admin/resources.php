@@ -37,15 +37,23 @@ include '../includes/header.php';
 
 <div class="container mt-4">
 
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>Gerir recursos</h2>
-
+        <div>
+            <span class="fs-3 fw-bold">
+                Gerir recursos
+            </span>
+        </div>
+        
         <a href="resource_form.php"
-           class="btn btn-primary">
+        class="btn btn-primary">
             Adicionar Recurso
         </a>
 
+        <a href="../dashboard.php"
+            class="btn btn-secondary me-2">
+                Voltar
+        </a>
     </div>
 
     <?php if (count($resources) > 0): ?>

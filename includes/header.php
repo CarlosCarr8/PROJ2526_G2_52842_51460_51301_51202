@@ -25,7 +25,9 @@ $basePath = $basePath ?? "";
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-    <a class="navbar-brand fw-bold" href="<?= $basePath ?>index.php">PCU</a>
+<a class="navbar-brand" href="/PROJ2526_G2_52842_51460_51301_51202/dashboard.php">PCU</a>
+
+
 
     <div class="ms-auto">
         <?php if (isset($_SESSION["user_id"])): ?>
