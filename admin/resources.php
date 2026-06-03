@@ -1,0 +1,128 @@
+<?php
+
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+require_once '../config/db.php';
+require_once '../includes/auth_check.php';
+
+try {
+
+    $sql = "
+        SELECT
+            r.resource_id,
+            r.code,
+            r.name,
+            r.location,
+            r.capacity,
+            r.status,
+            rt.type_name
+        FROM resources r
+        INNER JOIN resource_types rt
+            ON r.resource_type_id = rt.resource_type_id
+        ORDER BY r.resource_id DESC
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+
+    $resources = $stmt->fetchAll();
+
+} catch (PDOException $e) {
+    die("Error loading resources: " . $e->getMessage());
+}
+
+include '../includes/header.php';
+?>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>Gerir recursos</h2>
+
+        <a href="resource_form.php"
+           class="btn btn-primary">
+            Adicionar Recurso
+        </a>
+
+    </div>
+
+    <?php if (count($resources) > 0): ?>
+
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-dark">
+
+                    <tr>
+                        <th>ID</th>
+                        <th>Código</th>
+                        <th>Nome</th>
+                        <th>Tipo</th>
+                        <th>Localização</th>
+                        <th>Capacidade</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <?php foreach ($resources as $resource): ?>
+                        <tr>
+                            <td>
+                                <?= $resource['resource_id'] ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($resource['code']) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($resource['name']) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($resource['type_name']) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($resource['location']) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($resource['capacity']) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($resource['status']) ?>
+                            </td>
+
+                            <td>
+
+                                <a href="resource_form.php?id=<?= $resource['resource_id'] ?>"
+                                   class="btn btn-sm btn-warning">
+                                    Editar
+                                </a>
+
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+    <?php else: ?>
+
+        <div class="alert alert-warning">
+            NNão foram encontrados recursos.
+        </div>
+
+    <?php endif; ?>
+
+</div>
+
+<?php include '../includes/footer.php'; ?>
