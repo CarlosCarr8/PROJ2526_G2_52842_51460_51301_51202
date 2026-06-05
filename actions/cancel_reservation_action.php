@@ -52,12 +52,12 @@ try {
 
     if (!$reservation) 
     {
-        die("Reservation not found.");
+        die("Reservas não encontradas.");
     }
 
     if ($reservation['status_id'] == 2) 
     {
-        die("Reservation already cancelled.");
+        die("Esta reserva já foi cancelada.");
     }
 
     $updateSql = "

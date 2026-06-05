@@ -1,5 +1,4 @@
 <?php
-
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -126,7 +125,7 @@ include '../includes/header.php';
     <?php else: ?>
 
         <div class="alert alert-warning">
-            NNão foram encontrados recursos.
+            Não foram encontrados recursos.
         </div>
 
     <?php endif; ?>
