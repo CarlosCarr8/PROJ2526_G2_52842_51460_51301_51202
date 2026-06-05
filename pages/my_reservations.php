@@ -74,6 +74,14 @@ include '../includes/header.php';
 
     </div>
 
+<?php 
+    if (isset($_GET['success']) && %_GET['success'] === 'cancelled'): ?>
+        <div class="alert alert-success">
+            Reserva cancelada com sucesso.
+        </div>
+    <?php endif; ?>
+    
+
     <?php if (count($reservations) > 0): ?>
 
         <div class="table-responsive">
