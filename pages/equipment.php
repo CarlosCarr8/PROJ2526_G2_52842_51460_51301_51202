@@ -23,7 +23,7 @@ try {
         FROM resources r
         INNER JOIN resource_types rt
             ON r.resource_type_id = rt.resource_type_id
-        WHERE rt.type_name = 'Equipment'
+        WHERE rt.type_name = 'equipment'
         ORDER BY r.name ASC
     ";
 
