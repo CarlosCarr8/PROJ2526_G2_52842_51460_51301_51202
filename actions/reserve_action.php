@@ -77,7 +77,7 @@ try {
     if ($resourceType === 'room' || $resourceType === 'laboratory') {
 
         $countSql .= "
-            AND rt.type_name IN ('Space', 'Laboratory')";
+            AND rt.type_name IN ('Room', 'Laboratory')";
 
         $limit = 2;
 
@@ -85,7 +85,7 @@ try {
 
     elseif ($resourceType === 'bicycle' || $resourceType === 'scooter') {
         $countSql .= "
-            AND rt.type_name IN ('Bike', 'Scooter')
+            AND rt.type_name IN ('Bicycle', 'Scooter')
         ";
         $limit = 1;
     }

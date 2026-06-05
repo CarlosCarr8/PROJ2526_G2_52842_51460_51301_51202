@@ -2,38 +2,37 @@
 
 session_start();
 
-ini_set('display_errors', 1);
+ini_set('display_errors', 1); //ativa os erros
 error_reporting(E_ALL);
 
-require_once '../config/db.php';
+require_once '../config/db.php'; //conexao à bd
 
-if (!isset($_SESSION['user_id'])) 
+if (!isset($_SESSION['user_id'])) //se o ut n estiver logado
 {
-    die("User not authenticated.");
+    die("Utilizador não autenticado");
 }
 
-if (!isset($_GET['id']) || empty($_GET['id'])) 
+if (!isset($_GET['id']) || empty($_GET['id']))  //se na URL tem um ID válido
 {
-    die("Invalid reservation ID.");
+    die("ID de reserva inválido");
 }
 
-$userId = $_SESSION['user_id'];
-$reservationId = intval($_GET['id']);
+$userId = $_SESSION['user_id']; //id do ut
+$reservationId = intval($_GET['id']); //ID para segurança
 
 try {
 
     $checkSql = "
         SELECT
-            reservation_id,
+            reservation_id, 
             status_id
         FROM reservations
-        WHERE reservation_id = :reservation_id
-        AND user_id = :user_id
+        WHERE reservation_id = :reservation_id //se a reserva existe
+        AND user_id = :user_id //se pertence ao ut
     ";
 
-    $checkStmt = $pdo->prepare($checkSql);
-
-    $checkStmt->bindParam
+    $checkStmt = $pdo->prepare($checkSql); //consulta a BD
+    $checkStmt->bindParam //id da reserva à consulta
     (
         ':reservation_id',
         $reservationId,

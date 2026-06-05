@@ -2,6 +2,7 @@
 require_once '../config/db.php';
 require_once '../includes/auth_check.php';
 
+$userRole = strtolower($_SESSION['role']);
 $pageTitle = "Spaces";
 
 try {
@@ -20,17 +21,31 @@ try {
         FROM resources r
         INNER JOIN resource_types rt 
             ON r.resource_type_id = rt.resource_type_id
-        WHERE rt.type_name IN ('room', 'laboratory')
-        ORDER BY r.name ASC
     ";
+
+    if ($userRole === 'professor') {
+        $sql .= "
+            WHERE rt.type_name IN ('room', 'laboratory')
+        ";
+    }
+
+    else {
+        $sql .= "
+            WHERE rt.type_name = 'room'
+        ";
+}
+
+$sql .= "
+    ORDER BY r.name ASC
+";
+
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
-
     $spaces = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 } catch (PDOException $e) {
-    die("Error loading spaces: " . $e->getMessage());
+    die("Erro:" . $e->getMessage());
 }
 
 include '../includes/header.php';
@@ -38,7 +53,7 @@ include '../includes/header.php';
 
 <div class="container mt-4">
 
-    <h2 class="mb-4">Spaces and Laboratories</h2>
+    <h2 class="mb-4">Reservas</h2>
 
     <?php if (count($spaces) > 0): ?>
 
