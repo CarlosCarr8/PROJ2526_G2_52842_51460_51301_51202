@@ -1,21 +1,24 @@
 <?php
-include __DIR__ . "/../includes/auth_check.php";
-include __DIR__ . "/../includes/role_check.php";
-requireRole(["administrator"]);
+include __DIR__ . "/../includes/auth_check.php"; //verifica se o utilizador está autenticado
+include __DIR__ . "/../includes/role_check.php"; //verifica as permissões
+requireRole(["administrator"]); //apenas administradores podem aceder
 
-require_once __DIR__ . "/../config/db.php";
+require_once __DIR__ . "/../config/db.php"; //conexão à BD
 
+//converte campos vazios para NULL
 function nullIfEmpty($value) {
     $value = trim($value ?? "");
     return $value === "" ? null : $value;
 }
 
+//obtém o nome da função através do ID
 function getRoleName(PDO $pdo, $roleId) {
     $stmt = $pdo->prepare("SELECT role_name FROM roles WHERE role_id = ?");
     $stmt->execute([$roleId]);
     return $stmt->fetchColumn();
 }
 
+//remove perfis antigos do utilizador
 function deleteAllProfiles(PDO $pdo, $userId) {
     $tables = [
         "student_profiles",
@@ -30,15 +33,19 @@ function deleteAllProfiles(PDO $pdo, $userId) {
     }
 }
 
+//verifica se o formulário foi enviado por POST
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: ../admin/users.php");
     exit;
 }
 
-$mode = $_POST["mode"] ?? "";
+$mode = $_POST["mode"] ?? ""; //modo de operação
 
 try {
+
+    //desativa um utilizador
     if ($mode === "deactivate") {
+
         $userId = $_POST["user_id"] ?? null;
 
         if (!$userId) {
@@ -53,16 +60,18 @@ try {
         exit;
     }
 
-    $pdo->beginTransaction();
+    $pdo->beginTransaction(); //inicia transação
 
     $userId = $_POST["user_id"] ?? null;
     $roleId = $_POST["role_id"] ?? null;
     $roleName = getRoleName($pdo, $roleId);
 
+    //verifica se a função existe
     if (!$roleName) {
         throw new Exception("Tipo de utilizador inválido.");
     }
 
+    //obtém os dados gerais do utilizador
     $name = trim($_POST["name"] ?? "");
     $email = trim($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
@@ -73,17 +82,22 @@ try {
     $documentNumber = nullIfEmpty($_POST["document_number"] ?? "");
     $status = $_POST["status"] ?? "active";
 
+    //verifica os campos obrigatórios
     if ($name === "" || $email === "") {
         throw new Exception("Nome e email são obrigatórios.");
     }
 
+    //cria um novo utilizador
     if ($mode === "create") {
+
         if ($password === "") {
             throw new Exception("A palavra-passe é obrigatória.");
         }
 
+        //encripta a palavra-passe
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
+        //insere o utilizador na BD
         $stmt = $pdo->prepare("
             INSERT INTO users
             (role_id, name, phone_number, email, password_hash, birthday, observations, document_type, document_number, status)
@@ -104,15 +118,19 @@ try {
             $status
         ]);
 
-        $userId = $pdo->lastInsertId();
+        $userId = $pdo->lastInsertId(); //obtém o ID do novo utilizador
 
+        //edita um utilizador existente
     } elseif ($mode === "edit") {
+
         if (!$userId) {
             throw new Exception("Utilizador inválido.");
         }
 
+        //atualiza também a palavra-passe
         if ($password !== "") {
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT); //encripta a palavra-passe
 
             $stmt = $pdo->prepare("
                 UPDATE users
@@ -135,7 +153,11 @@ try {
                 $userId
             ]);
 
-        } else {
+        //atualiza sem alterar a palavra-passe
+        } 
+        
+        else {
+
             $stmt = $pdo->prepare("
                 UPDATE users
                 SET role_id = ?, name = ?, phone_number = ?, email = ?,
@@ -157,13 +179,16 @@ try {
             ]);
         }
 
-        deleteAllProfiles($pdo, $userId);
+        deleteAllProfiles($pdo, $userId); //remove perfis antigos
 
     } else {
+
         throw new Exception("Modo inválido.");
     }
 
+    //perfil de estudante
     if ($roleName === "student") {
+
         $studentNumber = trim($_POST["student_number"] ?? "");
         $courseId = $_POST["student_course_id"] ?? null;
         $academicYear = nullIfEmpty($_POST["student_academic_year"] ?? "");
@@ -186,7 +211,9 @@ try {
         ]);
     }
 
+    //perfil de professor
     if ($roleName === "professor") {
+
         $professorNumber = trim($_POST["professor_number"] ?? "");
         $departmentId = $_POST["professor_department_id"] ?? null;
         $academicYear = nullIfEmpty($_POST["professor_academic_year"] ?? "");
@@ -211,7 +238,9 @@ try {
         ]);
     }
 
+    //perfil de funcionário
     if ($roleName === "funcionario") {
+
         $funcionarioNumber = trim($_POST["funcionario_number"] ?? "");
         $departmentId = $_POST["funcionario_department_id"] ?? null;
         $cargo = trim($_POST["cargo"] ?? "");
@@ -236,7 +265,9 @@ try {
         ]);
     }
 
+        //perfil de administrador
     if ($roleName === "administrator") {
+
         $administratorNumber = trim($_POST["administrator_number"] ?? "");
         $departmentId = $_POST["administrator_department_id"] ?? null;
         $adminLevel = $_POST["admin_level"] ?? "normal";
@@ -259,30 +290,36 @@ try {
         ]);
     }
 
+    //remove permissões antigas
     $stmt = $pdo->prepare("DELETE FROM user_permissions WHERE user_id = ?");
     $stmt->execute([$userId]);
 
+    //obtém as permissões selecionadas
     $permissions = $_POST["permissions"] ?? [];
 
+    //atribui as novas permissões
     foreach ($permissions as $permissionId) {
+
         $stmt = $pdo->prepare("
             INSERT INTO user_permissions (user_id, permission_id)
             VALUES (?, ?)
         ");
 
-        $stmt->execute([$userId, $permissionId]);
+        $stmt->execute([
+            $userId,
+            $permissionId
+        ]);
     }
 
-    $pdo->commit();
-
+    $pdo->commit(); //confirma todas as alterações
     header("Location: ../admin/users.php?success=1");
     exit;
 
 } catch (Exception $e) {
+    //desfaz as alterações em caso de erro
     if ($pdo->inTransaction()) {
         $pdo->rollBack();
     }
-
     die("Erro ao guardar utilizador: " . $e->getMessage());
 }
 ?>

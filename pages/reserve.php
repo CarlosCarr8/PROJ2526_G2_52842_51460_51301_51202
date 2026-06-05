@@ -1,16 +1,16 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 1); //ativa a exibição de erros
+error_reporting(E_ALL); //mostra todos os erros
 
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
+require_once '../config/db.php'; //conexão à bd
+require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
 
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die("Invalid resource ID.");
+if (!isset($_GET['id']) || empty($_GET['id'])) { //verifica se foi recebido um id válido
+    die("ID do recurso inválido.");
 }
 
-$resourceId = intval($_GET['id']);
+$resourceId = intval($_GET['id']); //converte o id para inteiro
 
 try {
 
@@ -28,40 +28,35 @@ try {
         WHERE r.resource_id = :resource_id
     ";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare($sql); //prepara a consulta
 
-    $stmt->bindParam(
+    $stmt->bindParam( //associa o id do recurso à consulta
         ':resource_id',
         $resourceId,
         PDO::PARAM_INT
     );
 
-    $stmt->execute();
+    $stmt->execute(); //executa a consulta
+    $resource = $stmt->fetch(); //obtém os dados do recurso
 
-    $resource = $stmt->fetch();
-
-    if (!$resource) {
-        die("Não foi encontrado nenhum recurso");
+    if (!$resource) { //verifica se o recurso existe
+        die("Não foi encontrado nenhum recurso.");
     }
 
-} catch (PDOException $e) {
-
-    die("Err: " . $e->getMessage());
-
+} 
+catch (PDOException $e) { //procura erros relacionados com a bd
+    die("Erro: " . $e->getMessage());
 }
 
-include '../includes/header.php';
+include '../includes/header.php'; //inclui o cabeçalho
 ?>
 
 <div class="container mt-4">
-
     <div class="card shadow-sm">
-
         <div class="card-body">
-
             <div class="d-flex justify-content-between align-items-center mb-4">
 
-                <h2>Reservar recursos</h2>
+                <h2>Reservar recurso</h2>
 
                 <a href="javascript:history.back()"
                    class="btn btn-secondary">
@@ -82,17 +77,17 @@ include '../includes/header.php';
                 </p>
 
                 <p>
-                    <strong>Codigo:</strong>
+                    <strong>Código:</strong>
                     <?= htmlspecialchars($resource['code']) ?>
                 </p>
 
                 <p>
-                    <strong>Localizaça:</strong>
+                    <strong>Localização:</strong>
                     <?= htmlspecialchars($resource['location']) ?>
                 </p>
 
                 <p>
-                    <strong>Status:</strong>
+                    <strong>Estado:</strong>
                     <?= htmlspecialchars($resource['status']) ?>
                 </p>
 
@@ -101,14 +96,13 @@ include '../includes/header.php';
             <form action="../actions/reserve_action.php"
                   method="POST">
 
+                <!-- id do recurso a reservar -->
                 <input type="hidden"
                        name="resource_id"
                        value="<?= $resource['resource_id'] ?>">
 
                 <div class="row">
-
                     <div class="col-md-4 mb-3">
-
                         <label class="form-label">
                             Data da reserva
                         </label>
@@ -117,26 +111,24 @@ include '../includes/header.php';
                                name="reservation_date"
                                class="form-control"
                                required>
-
                     </div>
 
                     <div class="col-md-4 mb-3">
 
                         <label class="form-label">
-                            Tempo de inicio
+                            Hora de início
                         </label>
 
                         <input type="time"
                                name="start_time"
                                class="form-control"
                                required>
-
                     </div>
 
                     <div class="col-md-4 mb-3">
 
                         <label class="form-label">
-                            Tempo final
+                            Hora de fim
                         </label>
 
                         <input type="time"
@@ -154,4 +146,5 @@ include '../includes/header.php';
         </div>
     </div>
 </div>
-<?php include '../includes/footer.php'; ?>
+
+<?php include '../includes/footer.php'; //inclui o rodapé ?>

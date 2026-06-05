@@ -1,9 +1,10 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
 
-$userRole = strtolower($_SESSION['role']);
-$pageTitle = "Spaces";
+require_once '../config/db.php'; //conexão à bd
+require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
+
+$userRole = strtolower($_SESSION['role']); //obtém o perfil do utilizador em minúsculas
+$pageTitle = "Espaços"; //título da página
 
 try {
 
@@ -23,44 +24,49 @@ try {
             ON r.resource_type_id = rt.resource_type_id
     ";
 
-    if ($userRole === 'professor') {
+    if ($userRole === 'professor') { //se for professor pode ver salas e laboratórios
+
         $sql .= "
             WHERE rt.type_name IN ('room', 'laboratory')
         ";
     }
 
-    else {
+    else { //os restantes utilizadores apenas veem salas
+
         $sql .= "
             WHERE rt.type_name = 'room'
         ";
+    }
+
+    $sql .= "
+        ORDER BY r.name ASC
+    ";
+
+    $stmt = $pdo->prepare($sql); //prepara a consulta
+    $stmt->execute(); //executa a consulta
+
+    $spaces = $stmt->fetchAll(PDO::FETCH_ASSOC); //obtém todos os espaços
+
+} 
+catch (PDOException $e) { //procura erros relacionados com a bd
+    die("Erro: " . $e->getMessage());
 }
 
-$sql .= "
-    ORDER BY r.name ASC
-";
-
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $spaces = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-} catch (PDOException $e) {
-    die("Erro:" . $e->getMessage());
-}
-
-include '../includes/header.php';
+include '../includes/header.php'; //inclui o cabeçalho
 ?>
 
 <div class="container mt-4">
 
-    <h2 class="mb-4">Reservas</h2>
+    <h2 class="mb-4">
+        Reservas
+    </h2>
 
-    <?php if (count($spaces) > 0): ?>
-
+    <?php if (count($spaces) > 0): //verifica se existem espaços ?>
         <div class="row">
-            <?php foreach ($spaces as $space): ?>
+            <?php foreach ($spaces as $space): //percorre todos os espaços ?>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100 shadow-sm">
+
                         <div class="card-body">
 
                             <h5 class="card-title">
@@ -92,14 +98,13 @@ include '../includes/header.php';
                             </p>
 
                             <p>
-                                <strong>Status:</strong>
+                                <strong>Estado:</strong>
                                 <?= htmlspecialchars($space['status']) ?>
                             </p>
 
                             <p>
                                 <?= htmlspecialchars($space['description']) ?>
                             </p>
-
                         </div>
 
                         <div class="card-footer bg-white border-0">
@@ -114,16 +119,12 @@ include '../includes/header.php';
                     </div>
                 </div>
             <?php endforeach; ?>
-
         </div>
-
-    <?php else: ?>
+    <?php else: //caso não existam espaços ?>
         <div class="alert alert-warning">
             Não foram encontrados espaços.
         </div>
     <?php endif; ?>
-
 </div>
 
-<?php include '../includes/footer.php'; ?>
-
+<?php include '../includes/footer.php'; //inclui o rodapé ?>

@@ -1,22 +1,27 @@
 <?php
-session_start();
+session_start(); //inicia a sessão
 
-require_once "../config/db.php";
+require_once "../config/db.php"; //conexão à BD
 
-if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+//verifica se o formulário foi enviado por POST
+if ($_SERVER["REQUEST_METHOD"] !== "POST") 
+{
     header("Location: ../login.php");
     exit;
 }
 
+//obtém os dados introduzidos pelo ut
 $email = trim($_POST["email"] ?? "");
 $password = $_POST["password"] ?? "";
 
-if (empty($email) || empty($password)) {
+//verifica se os campos foram preenchidos
+if (empty($email) || empty($password)) 
+{
     header("Location: ../login.php?error=1");
     exit;
 }
-
-$sql = "
+//procura o utilizador pelo email e obtém os seus dados e função
+$sql = " 
     SELECT 
         u.user_id,
         u.name,
@@ -30,30 +35,39 @@ $sql = "
     LIMIT 1
 ";
 
+//procura o utilizador pelo email
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
-if (!$user) {
+//verifica se o utilizador existe
+if (!$user) 
+{
     header("Location: ../login.php?error=1");
     exit;
 }
 
-if ($user["status"] !== "active") {
+//verifica se a conta está ativa
+if ($user["status"] !== "active") 
+{
     header("Location: ../login.php?error=1");
     exit;
 }
 
-if (!password_verify($password, $user["password_hash"])) {
+//verifica se a passe está correta
+if (!password_verify($password, $user["password_hash"])) 
+{
     header("Location: ../login.php?error=1");
     exit;
 }
 
+//guarda os dados do utilizador na sessão
 $_SESSION["user_id"] = $user["user_id"];
 $_SESSION["name"] = $user["name"];
 $_SESSION["email"] = $user["email"];
 $_SESSION["role"] = $user["role_name"];
 
+//manda para o dashboard
 header("Location: ../dashboard.php");
 exit;
 ?>
