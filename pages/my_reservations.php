@@ -74,6 +74,14 @@ include '../includes/header.php';
 
     </div>
 
+<?php 
+    if (isset($_GET['success']) && %_GET['success'] === 'cancelled'): ?>
+        <div class="alert alert-success">
+            Reserva cancelada com sucesso.
+        </div>
+    <?php endif; ?>
+    
+
     <?php if (count($reservations) > 0): ?>
 
         <div class="table-responsive">
@@ -141,12 +149,26 @@ include '../includes/header.php';
                             </td>
 
                             <td>
+                                // Apenas reservas ativas podem ser canceladas
                                 <?php if ($reservation['status_name'] === 'active'): ?>
-                                    <a href="../actions/cancel_reservation_action.php?id=<?= $reservation['reservation_id'] ?>"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Cancel this reservation?')">
+                                    <form
+                                        action="../actions/cancel_reservation.php"
+                                        method="POST"
+                                        class="d-inline"
+                                        onsubmit="return confirm('Tem certeza que deseja cancelar esta reserva?');"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="reservation_id"
+                                        value="<?= $reservation['reservation_id'] ?>"
+                                    >
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger btn-sm"
+                                    >
                                         Cancelar
-                                    </a>
+                                    </button>
+                                </form>
                                 <?php else: ?>
                                     <span class="text-muted">
                                         —

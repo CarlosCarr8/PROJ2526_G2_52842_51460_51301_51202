@@ -4,6 +4,9 @@ error_reporting(E_ALL);
 
 require_once '../config/db.php';
 require_once '../includes/auth_check.php';
+require_once '../includes/role_check.php';
+
+requireRole(['administrator']);
 
 try {
 

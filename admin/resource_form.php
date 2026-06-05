@@ -5,6 +5,9 @@ error_reporting(E_ALL);
 
 require_once '../config/db.php';
 require_once '../includes/auth_check.php';
+require_once '../includes/role_check.php';
+
+requireRole(['administrator']);
 
 $isEdit = false;
 $resource = null;
@@ -255,10 +258,19 @@ include '../includes/header.php';
                         class="form-select"
                         required>
 
-                    <option value="active"
-                        <?= ($isEdit && $resource['status'] == 'active') ? 'selected' : '' ?>>
-                        Active
+                    <option value="available"
+                        <?= ($isEdit && $resource['status'] == 'available') ? 'selected' : '' ?>>
+                        Available
                     </option>
+
+                    <option value="unavailable"
+                        <?= ($isEdit && $resource['status'] == 'unavailable') ? 'selected' : '' ?>>
+                        Unavailable
+                    </option>
+
+                    <option value="maintenance"
+                        <?= ($isEdit && $resource['status'] == 'maintenance') ? 'selected' : '' ?>>
+                        Maintenance
 
                     <option value="inactive"
                         <?= ($isEdit && $resource['status'] == 'inactive') ? 'selected' : '' ?>>
