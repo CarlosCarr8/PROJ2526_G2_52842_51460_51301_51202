@@ -1,5 +1,5 @@
 import ply.yacc as yacc
-from myPart_lexer import tokens
+from lexer import tokens
 
 start = 'comando'
 
