@@ -5,6 +5,9 @@ error_reporting(E_ALL);
 
 require_once '../config/db.php'; //conexão à BD
 require_once '../includes/auth_check.php'; //verifica autenticação
+require_once '../includes/role_check.php'; //verifica permissões
+
+requireRole(['administrator']); //apenas administradores
 
 $isEdit = false; //define se está em modo de edição
 $resource = null; //guarda os dados do recurso (caso edição)
@@ -232,10 +235,25 @@ include '../includes/header.php';
                         class="form-select"
                         required>
 
-                    <option value="active"
-                        <?= ($isEdit && $resource['status'] == 'active') ? 'selected' : '' ?>>
-                        Ativo
-                    </option>
+<option value="available"
+    <?= ($isEdit && $resource['status'] == 'available') ? 'selected' : '' ?>>
+    Disponível
+</option>
+
+<option value="unavailable"
+    <?= ($isEdit && $resource['status'] == 'unavailable') ? 'selected' : '' ?>>
+    Indisponível
+</option>
+
+<option value="maintenance"
+    <?= ($isEdit && $resource['status'] == 'maintenance') ? 'selected' : '' ?>>
+    Em manutenção
+</option>
+
+<option value="inactive"
+    <?= ($isEdit && $resource['status'] == 'inactive') ? 'selected' : '' ?>>
+    Inativo
+</option>
                     <option value="inactive"
                         <?= ($isEdit && $resource['status'] == 'inactive') ? 'selected' : '' ?>>
                         Inativo

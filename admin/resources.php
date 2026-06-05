@@ -3,8 +3,11 @@
 ini_set('display_errors', 1); //ativa os erros
 error_reporting(E_ALL);
 
-require_once '../config/db.php'; //conexao à bd
-require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
+require_once '../config/db.php'; //conexão à BD
+require_once '../includes/auth_check.php'; //verifica autenticação
+require_once '../includes/role_check.php'; //verifica permissões
+
+requireRole(['administrator']); //apenas administradores
 
 try {
     $sql = "

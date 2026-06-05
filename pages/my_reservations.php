@@ -71,7 +71,13 @@ include '../includes/header.php'; //inclui o cabeçalho
         </a>
     </div>
 
-    <?php if (count($reservations) > 0): //verifica se existem reservas ?>
+<?php if (isset($_GET['success']) && $_GET['success'] === 'cancelled'): ?>
+    <div class="alert alert-success">
+        Reserva cancelada com sucesso.
+    </div>
+<?php endif; ?>
+
+<?php if (count($reservations) > 0): //verifica se existem reservas ?>
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle">
                 <thead class="table-dark">
@@ -151,14 +157,27 @@ include '../includes/header.php'; //inclui o cabeçalho
                             </td>
 
                             <td>
-                                <?php if ($reservation['status_name'] === 'active'): //permite cancelar apenas reservas ativas ?>
+<?php if ($reservation['status_name'] === 'active'): //permite cancelar apenas reservas ativas ?>
 
-                                    <a href="../actions/cancel_reservation_action.php?id=<?= $reservation['reservation_id'] ?>"
-                                       class="btn btn-danger btn-sm"
-                                       onclick="return confirm('Tem a certeza que pretende cancelar esta reserva?')">
-                                        Cancelar
-                                    </a>
+    <form
+        action="../actions/cancel_reservation.php"
+        method="POST"
+        class="d-inline"
+        onsubmit="return confirm('Tem a certeza que pretende cancelar esta reserva?');"
+    >
+        <input
+            type="hidden"
+            name="reservation_id"
+            value="<?= $reservation['reservation_id'] ?>"
+        >
 
+        <button
+            type="submit"
+            class="btn btn-danger btn-sm"
+        >
+            Cancelar
+        </button>
+    </form>
                                 <?php else: ?>
 
                                     <span class="text-muted">
