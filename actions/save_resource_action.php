@@ -13,16 +13,32 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 try {
     $resourceId = $_POST['resource_id'] ?? null;
 
-    $resourceTypeId = $_POST['resource_type_id'];
-    $code = trim($_POST['code']);
-    $name = trim($_POST['name']);
-    $description = trim($_POST['description']);
-    $location = trim($_POST['location']);
-    $floor = $_POST['floor'];
-    $capacity = $_POST['capacity'];
-    $quantityTotal = $_POST['quantity_total'];
-    $quantityAvailable = $_POST['quantity_available'];
-    $status = $_POST['status'];
+    $resourceTypeId = $_POST['resource_type_id'] ?? null;
+    $code = trim($_POST['code']) ?? null;
+    $name = trim($_POST['name']) ?? null;
+    $description = trim($_POST['description']) ?? null;
+    $location = trim($_POST['location']) ?? null;
+
+    $floor = ($_POST['floor'] == '' ) ? intval($_POST['floor']) : null;
+    $capacity = ($_POST['capacity'] !== '') ? intval($_POST['capacity']) : null;
+
+    $quantityTotal = ($_POST['quantity_total'] !== '') ? intval($_POST['quantity_total']) : 1;
+    $quantityAvailable = ($_POST['quantity_available'] !== '') ? intval($_POST['quantity_available']) : 1;
+    $status = $_POST['status'] ?? 'available';
+
+    $validStatuses = ['available', 'unavailable', 'maintenance', 'inactive'];
+
+    if (!in_array($status, $validStatuses)) {
+        die("Estado do recurso inválido.");
+    }
+    
+    if ($quantityAvailable > $quantityTotal) {
+        die("A quantidade disponível não pode ser maior que a quantidade total.");
+    }
+
+    if ($quantityTotal < 0 || $quantityAvailable < 0) {
+        die("As quantidades não podem ser negativas.");
+    }
 
     if (
         empty($resourceTypeId) ||
