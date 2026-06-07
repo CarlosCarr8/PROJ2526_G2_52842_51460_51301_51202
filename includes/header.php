@@ -4,12 +4,22 @@ if (session_status() === PHP_SESSION_NONE) { //se a sessão ainda não existir
     session_start(); //inicia a sessão
 }
 
-$pageTitle = $pageTitle ?? "PCU"; //define o título da página
-$basePath = $basePath ?? ""; //define o caminho base
+$pageTitle = $pageTitle ?? "Sistema de Gestão de Recursos e Mobilidade"; //define o título da página
+
+if (!isset($basePath)) { //define automaticamente o caminho base para os links
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    $currentFolder = basename(str_replace('\\', '/', dirname($scriptName)));
+
+    if ($currentFolder === 'pages' || $currentFolder === 'admin') {
+        $basePath = '../';
+    } else {
+        $basePath = '';
+    }
+}
 
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
