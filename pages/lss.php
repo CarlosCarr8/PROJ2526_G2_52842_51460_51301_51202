@@ -130,9 +130,9 @@ button:hover{
 
 <div class="container">
 
-    <a href="dashboard.php" class="voltar">
+        <a href="../dashboard.php" class="voltar">
         ← Voltar
-    </a>
+        </a>
 
     <h1>PCU - Linguagem LSS</h1>
 
