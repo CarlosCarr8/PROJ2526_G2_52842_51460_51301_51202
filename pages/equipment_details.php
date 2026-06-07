@@ -95,17 +95,16 @@ include '../includes/header.php'; //inclui o cabeçalho
 
                     <p>
                         <strong>Andar:</strong>
-                        <?= htmlspecialchars($resource['floor']) ?>
+                        <?= htmlspecialchars($resource['floor'] ?? 'N/A') ?> <!---caso seja null--->
                     </p>
+
                 </div>
 
                 <div class="col-md-6">
 
-                    <p>
-                        <strong>Capacidade:</strong>
-                        <?= htmlspecialchars($resource['capacity']) ?>
-                    </p>
-
+                    <p> 
+                        <strong>Capacidade:</strong> 
+                        <?= htmlspecialchars($resource['capacity'] ?? 'N/A') ?> </p> <!---caso seja null--->
                     <p>
                         <strong>Quantidade total:</strong>
                         <?= htmlspecialchars($resource['quantity_total']) ?>
