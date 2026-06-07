@@ -1,70 +1,52 @@
 <?php
 
-session_start();
+session_start();    
 
-ini_set('display_errors', 1); //ativa os erros
+ini_set('display_errors', 1); 
 error_reporting(E_ALL);
 
-require_once '../config/db.php'; //conexao à bd
+require_once '../config/db.php';
 
-
-if (!isset($_SESSION['user_id'])) 
-{
+if (!isset($_SESSION['user_id'])) {
     die("Utilizador não autenticado");
 }
 
-//se na URL tem um ID válido
-if (!isset($_GET['id']) || empty($_GET['id']))  
-{
+if (!isset($_POST['reservation_id']) || empty($_POST['reservation_id'])) {
     die("ID de reserva inválido");
 }
 
-$userId = $_SESSION['user_id']; //id do ut
-$reservationId = intval($_GET['id']); //ID para segurança
+$userId = $_SESSION['user_id'];
+$reservationId = intval($_POST['reservation_id']);
 
 try {
 
     $checkSql = "
         SELECT
-            reservation_id, 
+            reservation_id,
             status_id
         FROM reservations
-        WHERE reservation_id = :reservation_id //se a reserva existe
-        AND user_id = :user_id //e se pertence ao ut
+        WHERE reservation_id = :reservation_id
+        AND user_id = :user_id
     ";
 
-    $checkStmt = $pdo->prepare($checkSql); //consulta a BD
-    $checkStmt->bindParam //associação id da reserva à consulta
-    (
-        ':reservation_id',
-        $reservationId,
-        PDO::PARAM_INT
-    );
+    $checkStmt = $pdo->prepare($checkSql);
 
-    //associação id da utilizador à consulta
-    $checkStmt->bindParam 
-    (
-        ':user_id',
-        $userId,
-        PDO::PARAM_INT
-    );
+    $checkStmt->bindParam(':reservation_id', $reservationId, PDO::PARAM_INT);
+    $checkStmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
 
-    $checkStmt->execute(); //executa a consulta
-    $reservation = $checkStmt->fetch(); //e obtem os dados
+    $checkStmt->execute();
 
-    //verifica se foi encontrada
-    if (!$reservation)  
-    {
-        die("Reservas não encontradas.");
+    $reservation = $checkStmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$reservation) {
+        die("Reserva não encontrada.");
     }
 
-    //verifica se foi cancelada
-    if ($reservation['status_id'] == 2) 
-    {
+    if ($reservation['status_id'] == 2) {
         die("Esta reserva já foi cancelada.");
     }
 
-    $updateSql = " //e aqui atualiza o estado para cancelada
+    $updateSql = "
         UPDATE reservations
         SET
             status_id = 2,
@@ -73,30 +55,18 @@ try {
         WHERE reservation_id = :reservation_id
     ";
 
-    $updateStmt = $pdo->prepare($updateSql); //prepara a atualização
-    $updateStmt->bindParam //regista quem cancelou
-    (
-        ':cancelado por:',
-        $userId,
-        PDO::PARAM_INT
-    );
+    $updateStmt = $pdo->prepare($updateSql);
 
-    //diz qual reserva tem de atualizar
-    $updateStmt->bindParam //diz qual reserva tem de atualizar
-    (
-        ':reservation_id',
-        $reservationId,
-        PDO::PARAM_INT
-    );
+    $updateStmt->bindParam(':cancelled_by', $userId, PDO::PARAM_INT);
+    $updateStmt->bindParam(':reservation_id', $reservationId, PDO::PARAM_INT);
 
-    $updateStmt->execute(); //faz a atualização
+    $updateStmt->execute();
 
-    header("Location: ../pages/my_reservations.php"); //leva o ut para a página das reservas
+    header("Location: ../pages/my_reservations.php");
     exit;
-} 
 
-catch (PDOException $e) //procura erros sobre a BD
-{
+} catch (PDOException $e) {
     die("Erro: " . $e->getMessage());
 }
+
 ?>

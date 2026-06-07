@@ -160,7 +160,7 @@ include '../includes/header.php'; //inclui o cabeçalho
 <?php if ($reservation['status_name'] === 'active'): //permite cancelar apenas reservas ativas ?>
 
     <form
-        action="../actions/cancel_reservation.php"
+        action="../actions/cancel_reservation_action.php"
         method="POST"
         class="d-inline"
         onsubmit="return confirm('Tem a certeza que pretende cancelar esta reserva?');"
