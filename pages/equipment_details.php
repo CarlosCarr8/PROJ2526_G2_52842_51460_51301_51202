@@ -94,17 +94,25 @@ include '../includes/header.php'; //inclui o cabeçalho
                     </p>
 
                     <p>
-                        <strong>Andar:</strong>
-                        <?= htmlspecialchars($resource['floor']) ?>
+                    <strong>Andar:</strong>
+                    <?php if ($resource['floor'] !== null && $resource['floor'] !== ''): ?>
+                        <?= htmlspecialchars((string) $resource['floor']) ?>
+                    <?php else: ?>
+                    <span class="text-muted">N/A</span>
+                        <?php endif; ?>
                     </p>
                 </div>
 
                 <div class="col-md-6">
 
                     <p>
-                        <strong>Capacidade:</strong>
-                        <?= htmlspecialchars($resource['capacity']) ?>
-                    </p>
+                    <strong>Capacidade:</strong>
+                    <?php if ($resource['capacity'] !== null && $resource['capacity'] !== ''): ?>
+                        <?= htmlspecialchars((string) $resource['capacity']) ?>
+                    <?php else: ?>
+                        <span class="text-muted">N/A</span>
+                    <?php endif; ?>
+                </p>
 
                     <p>
                         <strong>Quantidade total:</strong>
