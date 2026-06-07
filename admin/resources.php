@@ -102,7 +102,13 @@ include '../includes/header.php'; //inclui o cabeçalho da página
                             </td>
 
                             <td>
-                                <?= htmlspecialchars($resource['capacity']) ?>
+                                <?php if ($resource['capacity'] !== null && $resource['capacity'] !== ''): ?>
+                                    <?= htmlspecialchars((string) $resource['capacity']) ?>
+                                <?php else: ?>
+                                    <span class="text-muted">
+                                        N/A
+                                    </span>
+                                <?php endif; ?>
                             </td>
 
                             <td>
