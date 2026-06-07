@@ -1,0 +1,77 @@
+Gramática LSS
+
+Reserva
+
+reservar:
+tipo: sala
+espaco: "A101"
+data: 15-06-2026
+hora_inicio: 10:00
+hora_fim: 12:00
+
+Cancelamento
+
+cancelar:
+reserva_id: 5
+
+Consulta
+
+consulta:
+tipo: sala
+periodo: 16-06-2026
+filtro: ativo
+
+Disponibilidade
+
+disponibilidade:
+tipo: sala
+data: 16-06-2026
+hora_inicio: 10:00
+hora_fim: 12:00
+
+Batch
+
+batch: <comando> <comando>
+
+Exemplo:
+
+batch:
+cancelar:
+reserva_id: 5
+
+cancelar:
+reserva_id: 8
+
+Definição
+
+def sala_preferida
+
+Condicional
+
+if capacidade > 20 else rejeitar
+
+Tipos de Dados
+
+String:
+
+"A101"
+
+Número:
+
+5
+
+Data:
+
+15-06-2026
+
+Hora:
+
+10:00
+
+Recursos Válidos
+
+- sala
+- laboratorio
+- equipamento
+- bicicleta
+- trotinete
