@@ -5,9 +5,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $comando = $_POST["comando"] ?? "";
 
-    // Aqui mais tarde vais chamar o Python
-    // Por enquanto apenas mostra o texto recebido
+    $python = "python";
 
+    $script = "../lss/executar.py";
+
+    $resultado = shell_exec(
+        $python . " " .
+        escapeshellarg($script) . " " .
+        escapeshellarg($comando)
+);
     $resultado = "Comando recebido:\n" . $comando;
 }
 ?>
