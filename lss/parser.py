@@ -167,10 +167,10 @@ def p_expressao_logica(p):
 
 def p_error(p):
     if p:
-        print(
+        raise Exception(
             f"Erro sintático na linha {p.lineno}: token '{p.value}' inesperado"
         )
     else:
-        print("Erro sintático: fim inesperado do input")
+        raise Exception("Erro sintático: fim inesperado do input")
 
 parser = yacc.yacc()

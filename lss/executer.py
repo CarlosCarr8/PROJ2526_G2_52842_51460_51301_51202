@@ -1,13 +1,30 @@
+import sys
 import json
 from parser import parser
 
-texto = input("LSS> ")
+texto = sys.stdin.read().strip()
 
-resultado = parser.parse(texto)
+if texto == "" and len(sys.argv) > 1:
+    texto = sys.argv[1]
 
-print(
-    json.dumps(
-        resultado,
-        default=str
+try:
+    resultado = parser.parse(texto)
+
+    print(
+        json.dumps(
+            resultado,
+            default=str,
+            ensure_ascii=False
+        )
     )
-)
+
+except Exception as e:
+    print(
+        json.dumps(
+            {
+                "comando": "erro",
+                "mensagem": str(e)
+            },
+            ensure_ascii=False
+        )
+    )
