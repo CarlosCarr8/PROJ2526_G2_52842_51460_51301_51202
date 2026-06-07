@@ -5,6 +5,8 @@ error_reporting(E_ALL); //mostra todos os erros
 
 require_once '../config/db.php'; //conexão à bd
 require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
+require_once '../includes/role_check.php'; //verifica se o utilizador tem permissão para aceder a esta página
+requireRole(['student']); //apenas estudantes podem aceder a esta página
 
 $pageTitle = "Mobilidade"; //título da página
 
