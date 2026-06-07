@@ -13,15 +13,24 @@ $basePath = $basePath ?? ""; //caminho base do projeto
 
     <a href="<?= $basePath ?>dashboard.php">Dashboard</a> <!-- acesso ao painel principal -->
 
-    <?php if ($role === "student" || $role === "professor"): //menu para estudantes e professores ?>
+<?php if ($role === "student"):  //menu para estudantes ?> 
 
-        <a href="<?= $basePath ?>pages/spaces.php">Espaços</a>
-        <a href="<?= $basePath ?>pages/equipment.php">Equipamentos</a>
-        <a href="<?= $basePath ?>pages/mobility.php">Mobilidade</a>
-        <a href="<?= $basePath ?>pages/my_reservations.php">Minhas Reservas</a>
-        <a href="<?= $basePath ?>pages/lss.php">LSS</a>
+    <a href="<?= $basePath ?>pages/spaces.php">Espaços</a>
+    <a href="<?= $basePath ?>pages/equipment.php">Equipamentos</a>
+    <a href="<?= $basePath ?>pages/mobility.php">Mobilidade</a>
+    <a href="<?= $basePath ?>pages/my_reservations.php">Minhas Reservas</a>
+    <a href="<?= $basePath ?>pages/lss.php">LSS</a>
 
-    <?php endif; ?>
+<?php endif; ?>
+
+<?php if ($role === "professor"): //menu para professores ?>
+
+    <a href="<?= $basePath ?>pages/spaces.php">Espaços</a>
+    <a href="<?= $basePath ?>pages/equipment.php">Equipamentos</a>
+    <a href="<?= $basePath ?>pages/my_reservations.php">Minhas Reservas</a>
+    <a href="<?= $basePath ?>pages/lss.php">LSS</a>
+
+<?php endif; ?>
 
     <?php if ($role === "funcionario"): //menu para funcionários ?>
 
