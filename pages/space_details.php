@@ -1,16 +1,16 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 1); //ativa a exibição de erros
+error_reporting(E_ALL); //mostra todos os erros
 
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
+require_once '../config/db.php'; //conexão à bd
+require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
 
-if (!isset($_GET['id']) || empty($_GET['id'])) {
+if (!isset($_GET['id']) || empty($_GET['id'])) { //verifica se foi recebido um id válido
     die("ID do espaço inválido");
 }
 
-$resourceId = intval($_GET['id']);
+$resourceId = intval($_GET['id']); //converte o id para inteiro
 
 try {
 
@@ -33,24 +33,29 @@ try {
         WHERE r.resource_id = :resource_id
     ";
 
-    $stmt = $pdo->prepare($sql);
+    $stmt = $pdo->prepare($sql); //prepara a consulta
 
-    $stmt->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
+    $stmt->bindParam( //associa o id do espaço à consulta
+        ':resource_id',
+        $resourceId,
+        PDO::PARAM_INT
+    );
 
-    $stmt->execute();
+    $stmt->execute(); //executa a consulta
+    $space = $stmt->fetch(); //obtém os dados do espaço
 
-    $space = $stmt->fetch();
-
-    if (!$space) {
+    if (!$space) { //verifica se o espaço existe
         die("Não foi encontrado nenhum espaço.");
     }
 
-} catch (PDOException $e) {
-    die("Erro da base de dados " . $e->getMessage());
+} 
+catch (PDOException $e) { //procura erros relacionados com a bd
+    die("Erro da base de dados: " . $e->getMessage());
 }
 
-include '../includes/header.php';
+include '../includes/header.php'; //inclui o cabeçalho
 ?>
+
 <div class="container mt-4">
     <div class="card shadow-sm">
         <div class="card-body">
@@ -93,12 +98,12 @@ include '../includes/header.php';
             </p>
 
             <p>
-                <strong>Quantidade disponivel:</strong>
+                <strong>Quantidade disponível:</strong>
                 <?= htmlspecialchars($space['quantity_available']) ?>
             </p>
 
             <p>
-                <strong>Status:</strong>
+                <strong>Estado:</strong>
                 <?= htmlspecialchars($space['status']) ?>
             </p>
 
@@ -118,4 +123,4 @@ include '../includes/header.php';
     </div>
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php include '../includes/footer.php'; //inclui o rodapé ?>

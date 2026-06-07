@@ -1,12 +1,12 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 1); //ativa a exibição de erros
+error_reporting(E_ALL); //mostra todos os erros
 
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
+require_once '../config/db.php'; //conexão à bd
+require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
 
-$pageTitle = "Equipment";
+$pageTitle = "Equipamentos"; //título da página
 
 try {
 
@@ -27,35 +27,36 @@ try {
         ORDER BY r.name ASC
     ";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt = $pdo->prepare($sql); //prepara a consulta
+    $stmt->execute(); //executa a consulta
 
-    $equipment = $stmt->fetchAll();
+    $equipment = $stmt->fetchAll(); //obtém todos os equipamentos
 
-} catch (PDOException $e) {
+} catch (PDOException $e) { //procura erros relacionados com a bd
 
-    die("Error loading equipment: " . $e->getMessage());
+    die("Erro ao carregar equipamentos: " . $e->getMessage());
 
 }
 
-include '../includes/header.php';
+include '../includes/header.php'; //inclui o cabeçalho
 ?>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>Equipamento</h2>
+        <h2>Equipamentos</h2>
 
         <a href="../dashboard.php"
            class="btn btn-secondary">
             Voltar
         </a>
+
     </div>
 
-    <?php if (count($equipment) > 0): ?>
+    <?php if (count($equipment) > 0): //verifica se existem equipamentos ?>
 
         <div class="row">
-            <?php foreach ($equipment as $item): ?>
+            <?php foreach ($equipment as $item): //percorre todos os equipamentos ?>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
@@ -69,7 +70,7 @@ include '../includes/header.php';
                             </span>
 
                             <p>
-                                <strong>Codigo:</strong>
+                                <strong>Código:</strong>
                                 <?= htmlspecialchars($item['code']) ?>
                             </p>
 
@@ -84,7 +85,7 @@ include '../includes/header.php';
                             </p>
 
                             <p>
-                                <strong>Status:</strong>
+                                <strong>Estado:</strong>
                                 <?= htmlspecialchars($item['status']) ?>
                             </p>
 
@@ -92,21 +93,27 @@ include '../includes/header.php';
                                 <?= htmlspecialchars($item['description']) ?>
                             </p>
                         </div>
+
                         <div class="card-footer bg-white border-0">
+
                             <a href="equipment_details.php?id=<?= $item['resource_id'] ?>"
                                class="btn btn-primary w-100">
                                 Ver detalhes
                             </a>
+
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
-    <?php else: ?>
+
+    <?php else: //caso não existam equipamentos ?>
+
         <div class="alert alert-warning">
-            Equipamento não encontrado
+            Equipamentos não encontrados.
         </div>
+
     <?php endif; ?>
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php include '../includes/footer.php'; //inclui o rodapé ?>

@@ -1,59 +1,75 @@
 <?php
 
-ini_set('display_errors', 1);
+ini_set('display_errors', 1); // ativa a exibição de erros
 error_reporting(E_ALL);
 
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
-require_once '../includes/role_check.php';
+require_once '../config/db.php'; // ligação à BD
+require_once '../includes/auth_check.php'; // verifica autenticação
+require_once '../includes/role_check.php'; // verifica permissões
 
-requireRole(['administrator']);
+requireRole(['administrator']); // apenas administradores
 
+// verifica se o pedido foi feito por POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die("Invalid request.");
+    die("Pedido inválido.");
 }
 
 try {
+
     $resourceId = $_POST['resource_id'] ?? null;
 
+    // dados do formulário
     $resourceTypeId = $_POST['resource_type_id'] ?? null;
-    $code = trim($_POST['code']) ?? null;
-    $name = trim($_POST['name']) ?? null;
-    $description = trim($_POST['description']) ?? null;
-    $location = trim($_POST['location']) ?? null;
+    $code = trim($_POST['code'] ?? '');
+    $name = trim($_POST['name'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $location = trim($_POST['location'] ?? '');
 
-    $floor = ($_POST['floor'] == '' ) ? intval($_POST['floor']) : null;
+    $floor = ($_POST['floor'] !== '') ? intval($_POST['floor']) : null;
     $capacity = ($_POST['capacity'] !== '') ? intval($_POST['capacity']) : null;
 
-    $quantityTotal = ($_POST['quantity_total'] !== '') ? intval($_POST['quantity_total']) : 1;
-    $quantityAvailable = ($_POST['quantity_available'] !== '') ? intval($_POST['quantity_available']) : 1;
+    $quantityTotal = ($_POST['quantity_total'] !== '')
+        ? intval($_POST['quantity_total'])
+        : 1;
+
+    $quantityAvailable = ($_POST['quantity_available'] !== '')
+        ? intval($_POST['quantity_available'])
+        : 1;
+
     $status = $_POST['status'] ?? 'available';
 
-    $validStatuses = ['available', 'unavailable', 'maintenance', 'inactive'];
+    // estados permitidos
+    $validStatuses = [
+        'available',
+        'unavailable',
+        'maintenance',
+        'inactive'
+    ];
 
     if (!in_array($status, $validStatuses)) {
         die("Estado do recurso inválido.");
     }
-    
+
     if ($quantityAvailable > $quantityTotal) {
-        die("A quantidade disponível não pode ser maior que a quantidade total.");
+        die("A quantidade disponível não pode ser superior à quantidade total.");
     }
 
     if ($quantityTotal < 0 || $quantityAvailable < 0) {
         die("As quantidades não podem ser negativas.");
     }
 
+    // valida campos obrigatórios
     if (
         empty($resourceTypeId) ||
         empty($code) ||
         empty($name) ||
         empty($status)
     ) {
-        die("Please fill all required fields.");
+        die("Por favor, preencha todos os campos obrigatórios.");
     }
 
+    //se existir ID → atualiza
     if (!empty($resourceId)) {
-
         $sql = "
             UPDATE resources
             SET
@@ -72,11 +88,10 @@ try {
         ";
 
         $stmt = $pdo->prepare($sql);
-
         $stmt->bindParam(':resource_id', $resourceId, PDO::PARAM_INT);
-
     }
 
+    //se não existir ID → cria novo registo
     else {
 
         $sql = "
@@ -107,16 +122,11 @@ try {
                 NOW()
             )
         ";
-
         $stmt = $pdo->prepare($sql);
     }
 
-    $stmt->bindParam(
-        ':resource_type_id',
-        $resourceTypeId,
-        PDO::PARAM_INT
-    );
-
+    //associa os parâmetros à query
+    $stmt->bindParam(':resource_type_id', $resourceTypeId, PDO::PARAM_INT);
     $stmt->bindParam(':code', $code);
     $stmt->bindParam(':name', $name);
     $stmt->bindParam(':description', $description);
@@ -127,13 +137,11 @@ try {
     $stmt->bindParam(':quantity_available', $quantityAvailable);
     $stmt->bindParam(':status', $status);
 
-    $stmt->execute();
-
-    header("Location: ../admin/resources.php");
+    $stmt->execute(); //executa a query
+    header("Location: ../admin/resources.php"); //volta para a página de recursos
     exit;
-
-} catch (PDOException $e) {
-
-    die("Database error: " . $e->getMessage());
-
+} 
+catch (PDOException $e) {
+    die("Erro na base de dados: " . $e->getMessage());
 }
+?>

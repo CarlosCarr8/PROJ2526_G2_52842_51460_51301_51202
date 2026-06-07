@@ -1,12 +1,12 @@
 <?php
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 1); //ativa a exibição de erros
+error_reporting(E_ALL); //mostra todos os erros
 
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
+require_once '../config/db.php'; //conexão à bd
+require_once '../includes/auth_check.php'; //verifica se o utilizador está autenticado
 
-$pageTitle = "Mobilidade";
+$pageTitle = "Mobilidade"; //título da página
 
 try {
 
@@ -27,41 +27,37 @@ try {
         ORDER BY r.name ASC
     ";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt = $pdo->prepare($sql); //prepara a consulta
+    $stmt->execute(); //executa a consulta
+    $mobilityResources = $stmt->fetchAll(); //obtém os recursos de mobilidade
 
-    $mobilityResources = $stmt->fetchAll();
-
-} catch (PDOException $e) {
+} catch (PDOException $e) { //procura erros relacionados com a bd
 
     die("Erro: " . $e->getMessage());
 
 }
 
-include '../includes/header.php';
+include '../includes/header.php'; //inclui o cabeçalho
 ?>
 
 <div class="container mt-4">
-
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>Recurso de mobilidade</h2>
+        <h2>Recursos de Mobilidade</h2>
 
         <a href="../dashboard.php"
            class="btn btn-secondary">
             Voltar
         </a>
-
     </div>
 
-    <?php if (count($mobilityResources) > 0): ?>
-
+    <?php if (count($mobilityResources) > 0): //verifica se existem recursos ?>
         <div class="row">
-            <?php foreach ($mobilityResources as $resource): ?>
-
+            <?php foreach ($mobilityResources as $resource): //percorre todos os recursos ?>
                 <div class="col-md-4 mb-4">
                     <div class="card h-100 shadow-sm">
                         <div class="card-body">
+
                             <h5 class="card-title">
                                 <?= htmlspecialchars($resource['name']) ?>
                             </h5>
@@ -71,7 +67,7 @@ include '../includes/header.php';
                             </span>
 
                             <p>
-                                <strong>Codigo:</strong>
+                                <strong>Código:</strong>
                                 <?= htmlspecialchars($resource['code']) ?>
                             </p>
 
@@ -86,14 +82,13 @@ include '../includes/header.php';
                             </p>
 
                             <p>
-                                <strong>Status:</strong>
+                                <strong>Estado:</strong>
                                 <?= htmlspecialchars($resource['status']) ?>
                             </p>
 
                             <p>
                                 <?= htmlspecialchars($resource['description']) ?>
                             </p>
-
                         </div>
 
                         <div class="card-footer bg-white border-0">
@@ -105,13 +100,14 @@ include '../includes/header.php';
                         </div>
                     </div>
                 </div>
-
             <?php endforeach; ?>
         </div>
-    <?php else: ?>
+
+    <?php else: //caso não existam recursos ?>
         <div class="alert alert-warning">
-            Não foram encontrados nenhuns meios de mobilidade.
+            Não foram encontrados meios de mobilidade.
         </div>
     <?php endif; ?>
 </div>
-<?php include '../includes/footer.php'; ?>
+
+<?php include '../includes/footer.php'; //inclui o rodapé ?>

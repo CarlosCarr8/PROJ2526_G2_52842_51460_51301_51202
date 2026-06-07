@@ -1,15 +1,15 @@
 <?php
-ini_set('display_errors', 1);
+
+ini_set('display_errors', 1); //ativa os erros
 error_reporting(E_ALL);
 
-require_once '../config/db.php';
-require_once '../includes/auth_check.php';
-require_once '../includes/role_check.php';
+require_once '../config/db.php'; //conexão à BD
+require_once '../includes/auth_check.php'; //verifica autenticação
+require_once '../includes/role_check.php'; //verifica permissões
 
-requireRole(['administrator']);
+requireRole(['administrator']); //apenas administradores
 
 try {
-
     $sql = "
         SELECT
             r.resource_id,
@@ -25,47 +25,44 @@ try {
         ORDER BY r.resource_id DESC
     ";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
+    $stmt = $pdo->prepare($sql); //prepara a consulta
+    $stmt->execute(); //executa a consulta
+    $resources = $stmt->fetchAll(); //obtém todos os recursos
 
-    $resources = $stmt->fetchAll();
-
-} catch (PDOException $e) {
-    die("Error loading resources: " . $e->getMessage());
+} 
+catch (PDOException $e) //procura erros relacionados com a bd
+{
+    die("Erro ao carregar os recursos: " . $e->getMessage());
 }
 
-include '../includes/header.php';
+include '../includes/header.php'; //inclui o cabeçalho da página
 ?>
 
 <div class="container mt-4">
-
-    
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <div>
             <span class="fs-3 fw-bold">
                 Gerir recursos
             </span>
         </div>
-        
+
         <a href="resource_form.php"
-        class="btn btn-primary">
-            Adicionar Recurso
+           class="btn btn-primary">
+            Adicionar recurso
         </a>
 
         <a href="../dashboard.php"
-            class="btn btn-secondary me-2">
-                Voltar
+           class="btn btn-secondary me-2">
+            Voltar
         </a>
+
     </div>
 
-    <?php if (count($resources) > 0): ?>
-
+    <?php if (count($resources) > 0): //se existirem recursos ?>
         <div class="table-responsive">
-
             <table class="table table-bordered table-hover">
-
                 <thead class="table-dark">
-
                     <tr>
                         <th>ID</th>
                         <th>Código</th>
@@ -73,16 +70,17 @@ include '../includes/header.php';
                         <th>Tipo</th>
                         <th>Localização</th>
                         <th>Capacidade</th>
-                        <th>Status</th>
+                        <th>Estado</th>
                         <th>Ações</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
 
-                    <?php foreach ($resources as $resource): ?>
+                    <?php foreach ($resources as $resource): //percorre todos os recursos 
+                    ?>
                         <tr>
+
                             <td>
                                 <?= $resource['resource_id'] ?>
                             </td>
@@ -110,7 +108,7 @@ include '../includes/header.php';
                             <td>
                                 <?= htmlspecialchars($resource['status']) ?>
                             </td>
-
+                            
                             <td>
 
                                 <a href="resource_form.php?id=<?= $resource['resource_id'] ?>"
@@ -125,14 +123,13 @@ include '../includes/header.php';
             </table>
         </div>
 
-    <?php else: ?>
+    <?php else: //caso não existam recursos ?>
 
         <div class="alert alert-warning">
             Não foram encontrados recursos.
         </div>
 
     <?php endif; ?>
-
 </div>
 
-<?php include '../includes/footer.php'; ?>
+<?php include '../includes/footer.php'; //inclui o rodapé ?>
